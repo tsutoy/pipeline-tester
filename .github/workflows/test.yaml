@@ -50,12 +50,13 @@ jobs:
         run: yarn bump
         working-directory: ${{ matrix.working-directory }}
 
+      - name: Update manifest
+        working-directory: ${{ matrix.working-directory }}
+        run: |
+          sed -i s/{{value}}/TESTE/g ./test.json
+
       - name: Run auto-commit
         uses: stefanzweifel/git-auto-commit-action@v4.16.0
         with:
           commit_message: action:bump package versions
           push_options: --force
-
-      - name: Sleep for 30 seconds
-        run: sleep 60s
-        shell: bash
