@@ -43,7 +43,7 @@ jobs:
         working-directory: ${{ matrix.working-directory }}
 
       - name: Build scripts
-        run: yarn build:scripts
+        run: yarn build
         working-directory: ${{ matrix.working-directory }}
 
       - name: Bump version
