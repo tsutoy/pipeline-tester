@@ -8,7 +8,7 @@ on:
 
     paths:
       - "apps/sidebar/**"
-      - ".github/workflows/frontend.ci.yaml"
+      - ".github/workflows/test.yaml"
 
 concurrency: ${{ github.ref_name }}
 
