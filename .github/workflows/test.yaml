@@ -53,7 +53,7 @@ jobs:
       - name: Update manifest
         working-directory: ${{ matrix.working-directory }}
         run: |
-          sed -i s/{{value}}/TESTE/g ./test.json
+          sed -i s/{{value}}/TESTEE/g ./test.json
 
       - name: Run auto-commit
         uses: stefanzweifel/git-auto-commit-action@v4.16.0
