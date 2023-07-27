@@ -55,3 +55,7 @@ jobs:
         with:
           commit_message: action:bump package versions
           push_options: --force
+
+      - name: Sleep for 30 seconds
+        run: sleep 60s
+        shell: bash
