@@ -1,0 +1,59 @@
+name: Navbar CI/CD
+
+on:
+  push:
+    branches: 
+      - main
+      - develop
+
+    paths:
+      - "apps/sidebar/**"
+      - ".github/workflows/frontend.ci.yaml"
+
+concurrency: ${{ github.ref_name }}
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: ${{ github.ref_name }}
+
+    permissions:
+      contents: write
+
+    strategy:
+      matrix:
+        node-version: [16.x]
+        working-directory: [./apps/sidebar]
+
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "yarn"
+          cache-dependency-path: "./yarn.lock"
+
+      - name: Install Yarn
+        run: npm i yarn -g
+
+      - name: Install dependencies
+        run: yarn install
+        working-directory: ${{ matrix.working-directory }}
+
+      - name: Build scripts
+        run: yarn build:scripts
+        working-directory: ${{ matrix.working-directory }}
+
+      - name: Bump version
+        run: yarn bump
+        working-directory: ${{ matrix.working-directory }}
+
+      - name: Run auto-commit
+        uses: stefanzweifel/git-auto-commit-action@v4.16.0
+        with:
+          commit_message: action:bump package versions
+          push_options: --force

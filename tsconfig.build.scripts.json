@@ -1,0 +1,16 @@
+{
+    "compilerOptions": {
+      "target": "es2016",
+      "rootDir": "./scripts",
+      "baseUrl": "./scripts",
+      "module": "commonjs",
+      "typeRoots": ["./@types"],
+      "esModuleInterop": true,
+      "forceConsistentCasingInFileNames": true,
+      "strict": true,
+      "skipLibCheck": true,
+      "allowJs": false
+    },
+    "include": ["scripts", "@types"]
+  }
+  
