@@ -72,7 +72,7 @@ jobs:
           sed -i s/{{version}}/${{ steps.bump.outputs.version }}/g ./manifest.json
 
       - name: Package app
-        run: zip -r app.zip ./
+        run: zip -r app.zip test.json
         working-directory: ${{ env.WORKING_DIRECTORY }}
 
       - name: Upload package as artifact
@@ -99,3 +99,6 @@ jobs:
 
       - name: Unzip app
         run: unzip app.zip -d .
+
+      - name: cat
+        run: cat test.json
