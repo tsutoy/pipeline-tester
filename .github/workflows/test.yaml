@@ -12,19 +12,14 @@ on:
 
 concurrency: ${{ github.ref_name }}
 
+env:
+  NODE_VERSION: 16.x
+  WORKING_DIRECTORY: ./apps/sidebar
+
 jobs:
-  build-and-deploy:
+  setup-dependencies:
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    environment: ${{ github.ref_name }}
-
-    permissions:
-      contents: write
-
-    strategy:
-      matrix:
-        node-version: [16.x]
-        working-directory: [./apps/sidebar]
 
     steps:
       - name: Check out repository code
@@ -33,11 +28,13 @@ jobs:
       - name: Update repository
         run: git pull
 
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Use Node.js ${{ env.NODE_VERSION }}
         id: setup-node
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "yarn"
+          cache-dependency-path: "./yarn.lock"
 
       - name: Setup Cache Node_Modules
         id: cache-node-modules
@@ -50,15 +47,42 @@ jobs:
       - name: Setup Dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: yarn install
-        working-directory: ${{ matrix.working-directory }}
+        working-directory: ${{ env.WORKING_DIRECTORY }}
+
+  bump:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+
+      - name: Update repository
+        run: git pull
+
+      - name: Use Node.js ${{ env.NODE_VERSION }}
+        id: setup-node
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Setup Cache Node_Modules
+        id: cache-node-modules
+        uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-${{ steps.setup-node.outputs['node-version'] }}-node_modules-${{ hashFiles('**/yarn.lock') }}
 
       - name: Build scripts
         run: yarn build
-        working-directory: ${{ matrix.working-directory }}
+        working-directory: ${{ env.WORKING_DIRECTORY }}
 
       - name: Bump version
         run: yarn bump
-        working-directory: ${{ matrix.working-directory }}
+        working-directory: ${{ env.WORKING_DIRECTORY }}
 
       - name: Run auto-commit
         uses: stefanzweifel/git-auto-commit-action@v4.16.0
