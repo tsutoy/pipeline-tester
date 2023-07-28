@@ -108,5 +108,5 @@ jobs:
       - uses: ncipollo/release-action@v1
         with:
           artifacts: "app.zip"
-          tag: needs.bump-and-package.outputs.repo_version
+          tag: ${{ needs.bump-and-package.outputs.repo_version }}
           bodyFile: "README.md"
