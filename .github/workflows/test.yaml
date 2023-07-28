@@ -87,6 +87,7 @@ jobs:
       artifact_name: app
 
   test:
+    needs: [bump-and-package]
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
