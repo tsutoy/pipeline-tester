@@ -63,9 +63,9 @@ jobs:
           commit_message: 'action:bump frontend version to ${{ steps.bump.outputs.version }}'
 
       - name: Bump manifest version
+        working-directory: ${{ env.WORKING_DIRECTORY }}
         run: |
           sed -i s/{{version}}/${{ steps.bump.outputs.version }}/g ./manifest.json
-        working-directory: ${{ matrix.working-directory }}
 
       - name: Package app
         run: zip -r app.zip ./
