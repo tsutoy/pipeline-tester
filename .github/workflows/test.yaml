@@ -62,17 +62,13 @@ jobs:
         with:
           commit_message: 'action:bump frontend version to ${{ steps.bump.outputs.version }}'
 
-      - name: Build app
-        run: yarn build
-        working-directory: ${{ env.WORKING_DIRECTORY }}
-
       - name: Bump manifest version
         run: |
-          sed -i s/{{version}}/${{ steps.bump.outputs.version }}/g ./dist/manifest.json
+          sed -i s/{{version}}/${{ steps.bump.outputs.version }}/g ./manifest.json
         working-directory: ${{ matrix.working-directory }}
 
       - name: Package app
-        run: zip -r app.zip ./dist
+        run: zip -r app.zip ./
         working-directory: ${{ env.WORKING_DIRECTORY }}
 
       - name: Upload package as artifact
