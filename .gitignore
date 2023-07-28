@@ -1,0 +1,7 @@
+node_modules
+dist
+/data
+*env
+zcli.apps.config.json
+*.log
+**/scripts/**/**.js

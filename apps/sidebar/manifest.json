@@ -1,0 +1,92 @@
+{
+    "name": "eZSend One",
+    "author": {
+      "name": "ETEG",
+      "email": "ezsend@zendesk.com",
+      "url": "https://www.eteg.com.br"
+    },
+    "defaultLocale": "pt-br",
+    "private": true,
+    "singleInstall": true,
+    "location": {
+      "support": {
+        "user_sidebar": {
+          "url": "http://localhost:3000",
+          "autoLoad": true
+        },
+        "ticket_sidebar": {
+          "url": "http://localhost:3000",
+          "autoLoad": true
+        }
+      }
+    },
+    "domainWhitelist": ["www.zopim.com", "api.smooch.io"],
+    "parameters": [
+      {
+        "name": "app_id",
+        "type": "text",
+        "required": true
+      },
+      {
+        "name": "integration_id",
+        "type": "text",
+        "required": false
+      },
+      {
+        "name": "whatsapp_namespace",
+        "type": "text",
+        "required": true
+      },
+      {
+        "name": "api_token",
+        "type": "password",
+        "required": true,
+        "secure": true
+      },
+      {
+        "name": "tag",
+        "type": "text",
+        "required": false
+      },
+      {
+        "name": "ticket_subject",
+        "type": "text",
+        "default": "Notificação proativa criada"
+      },
+      {
+        "name": "enable_notifications_ticket_registration",
+        "type": "checkbox",
+        "default": true
+      },
+      {
+        "name": "switchboard_integration_name",
+        "type": "text",
+        "default": "zd-agentWorkspace"
+      },
+      {
+        "name": "include_only",
+        "type": "text"
+      },
+      {
+        "name": "exclude_all",
+        "type": "text"
+      },
+      {
+        "name": "chat_nickname",
+        "type": "text",
+        "required": true
+      },
+      {
+        "name": "chat_avatar",
+        "type": "text",
+        "required": true
+      },
+      {
+        "name": "allowed_roles_to_manipulate_templates",
+        "type": "text"
+      }
+    ],
+    "version": "{{version}}",
+    "frameworkVersion": "2.0"
+  }
+  
