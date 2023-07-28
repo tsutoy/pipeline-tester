@@ -33,8 +33,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "yarn"
-          cache-dependency-path: "./yarn.lock"
 
       - name: Setup Cache Node_Modules
         id: cache-node-modules
@@ -50,6 +48,7 @@ jobs:
         working-directory: ${{ env.WORKING_DIRECTORY }}
 
   bump:
+    needs: [setup-dependencies]
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
