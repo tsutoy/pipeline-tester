@@ -12,7 +12,6 @@ on:
 concurrency: ${{ github.ref_name }}
 
 env:
-  NODE_VERSION: 16.x
   WORKING_DIRECTORY: ./apps/sidebar
 
 jobs:
@@ -29,12 +28,6 @@ jobs:
 
       - name: Update repository
         run: git pull
-
-      - name: Use Node.js ${{ env.NODE_VERSION }}
-        id: setup-node
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ env.NODE_VERSION }}
 
       - name: Setup Cache Node_Modules
         id: cache-node-modules
