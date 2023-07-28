@@ -4,7 +4,6 @@ on:
   push:
     branches: 
       - main
-      - develop
 
     paths:
       - "apps/sidebar/**"
@@ -17,38 +16,7 @@ env:
   WORKING_DIRECTORY: ./apps/sidebar
 
 jobs:
-  setup-dependencies:
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-
-    steps:
-      - name: Check out repository code
-        uses: actions/checkout@v3
-
-      - name: Update repository
-        run: git pull
-
-      - name: Use Node.js ${{ env.NODE_VERSION }}
-        id: setup-node
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-
-      - name: Setup Cache Node_Modules
-        id: cache-node-modules
-        uses: actions/cache@v3
-        with:
-          path: '**/node_modules'
-          key: ${{ runner.os }}-${{ steps.setup-node.outputs['node-version'] }}-node_modules-${{ hashFiles('**/yarn.lock') }}
-        
-
-      - name: Setup Dependencies
-        if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: yarn install
-        working-directory: ${{ env.WORKING_DIRECTORY }}
-
-  bump:
-    needs: [setup-dependencies]
+  bump-and-package:
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -75,15 +43,43 @@ jobs:
           path: '**/node_modules'
           key: ${{ runner.os }}-${{ steps.setup-node.outputs['node-version'] }}-node_modules-${{ hashFiles('**/yarn.lock') }}
 
+      - name: Setup Dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: yarn install
+        working-directory: ${{ env.WORKING_DIRECTORY }}
+
       - name: Build scripts
         run: yarn build
         working-directory: ${{ env.WORKING_DIRECTORY }}
 
       - name: Bump version
+        id: bump
         run: yarn bump
         working-directory: ${{ env.WORKING_DIRECTORY }}
 
       - name: Run auto-commit
         uses: stefanzweifel/git-auto-commit-action@v4.16.0
         with:
-          commit_message: action:bump package versions
+          commit_message: 'action:bump frontend version to ${{ steps.bump.outputs.version }}'
+
+      - name: Build app
+        run: yarn build
+        working-directory: ${{ env.WORKING_DIRECTORY }}
+
+      - name: Bump manifest version
+        run: |
+          sed -i s/{{version}}/${{ steps.bump.outputs.version }}/g ./dist/manifest.json
+        working-directory: ${{ matrix.working-directory }}
+
+      - name: Package app
+        run: zip -r app.zip ./dist
+        working-directory: ${{ env.WORKING_DIRECTORY }}
+
+      - name: Upload package as artifact
+        uses: actions/upload-artifact@v3
+        working-directory: ${{ env.WORKING_DIRECTORY }}
+        with:
+          name: app
+          path: app.zip
+
+      
