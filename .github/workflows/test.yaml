@@ -60,7 +60,7 @@ jobs:
       - name: Run auto-commit
         uses: stefanzweifel/git-auto-commit-action@v4.16.0
         with:
-          commit_message: 'action:bump frontend version to ${{ steps.bump.outputs.version }}'
+          commit_message: 'action: bump version - frontend ${{ steps.bump.outputs.frontend_version }} repo: ${{ steps.bump.outputs.repo_version }}'
 
       - name: Save Auto Commit
         id: auto-commit
@@ -69,7 +69,7 @@ jobs:
       - name: Bump manifest version
         working-directory: ${{ env.WORKING_DIRECTORY }}
         run: |
-          sed -i s/{{version}}/${{ steps.bump.outputs.version }}/g ./manifest.json
+          sed -i s/{{version}}/${{ steps.bump.outputs.frontend_version }}/g ./dist/manifest.json
 
       - name: Package app
         run: zip -r app.zip test.json
@@ -82,23 +82,31 @@ jobs:
           path: '${{ env.WORKING_DIRECTORY }}/app.zip'
     
     outputs:
-      version: ${{ steps.bump.outputs.version }}
-      bump_commit_id: ${{ steps.auto-commit.commit_id }}
+      frontend_version: ${{ steps.bump.outputs.frontend_version }}
+      repo_version: ${{ steps.bump.outputs.repo_version }}
+      bump_commit_id: ${{ steps.auto-commit.outputs.commit_id }}
       artifact_name: app
 
-  test:
+  release:
     needs: [bump-and-package]
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
     timeout-minutes: 15
 
     steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+
       - name: Download artifact
         uses: actions/download-artifact@v3
         with:
           name: app
 
-      - name: Unzip app
-        run: unzip app.zip -d .
-
-      - name: cat
-        run: cat test.json
+      - uses: ncipollo/release-action@v1
+        with:
+          artifacts: "app.zip"
+          tag: needs.bump-and-package.outputs.repo_version
+          bodyFile: "README.md"
