@@ -86,7 +86,7 @@
         "type": "text"
       }
     ],
-    "version": "{{version}}",
+    "version": "1.0.11",
     "frameworkVersion": "2.0"
   }
   
