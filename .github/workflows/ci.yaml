@@ -120,6 +120,6 @@ jobs:
 
       - uses: ncipollo/release-action@v1
         with:
-          artifacts: "app.zip"
+          artifacts: "app_${{ needs.frontend-ci.outputs.version }}.zip"
           tag: ${{ steps.bump.outputs.version }}
           bodyFile: "README.md"
