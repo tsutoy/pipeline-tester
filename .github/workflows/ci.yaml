@@ -87,8 +87,8 @@ jobs:
         run: |
           sed -i "s/{{last_tag}}/${{ env.old_version }}/g" templates/release.md
           sed -i "s/{{current_tag}}/${{ env.new_version }}/g" templates/release.md
-          sed -i "s/{{frontend_output}}/${{ needs.frontend-ci.outputs.new_version && env.frontend_output | 'Nothing Changes' }}/g" templates/release.md
-          sed -i "s/{{backend_output}}/${{ needs.backend-ci.outputs.new_version && env.backend_output | 'Nothing Changes' }}/g" templates/release.md
+          sed -i "s/{{frontend_output}}/${{ needs.frontend-ci.outputs.new_version && env.frontend_output || 'Nothing Changes' }}/g" templates/release.md
+          sed -i "s/{{backend_output}}/${{ needs.backend-ci.outputs.new_version && env.backend_output || 'Nothing Changes' }}/g" templates/release.md
 
       - uses: ncipollo/release-action@v1
         with:
