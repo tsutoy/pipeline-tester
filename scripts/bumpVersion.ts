@@ -3,7 +3,7 @@ import { shell } from './utils/shell';
 
 type BranchTypes = 'major' | 'minor' | 'patch';
 
-function bumpVersion(type: BranchTypes): string {
+function bumpVersion(type: BranchTypes) {
   const { stdout } = shell.exec(
     `yarn version --${type} --no-commit-hooks --no-git-tag-version`,
     { onErrorMessage: `failed to bump package.json version.` },
