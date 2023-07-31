@@ -83,6 +83,26 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v3
 
+      - name: Setup Cache Scripts
+        id: cache-scripts
+        uses: actions/cache@v3
+        with:
+          path: 'scripts'
+          key: ${{ runner.os }}-${{ steps.setup-node.outputs['node-version'] }}-node_modules-${{ hashFiles('scripts/**.ts') }}
+
+      - name: Bump version
+        id: bump
+        run: yarn bump
+
+      - name: Run auto-commit
+        uses: stefanzweifel/git-auto-commit-action@v4.16.0
+        with:
+          commit_message: 'action: bump repo version to ${{ steps.bump.outputs.version }}'
+
+      - name: Save Auto Commit
+        id: auto-commit
+        run: echo "commit_id=$(git log --format="%H" -n 1)" >> $GITHUB_OUTPUT
+
       - name: Download artifact
         uses: actions/download-artifact@v3
         with:
@@ -91,5 +111,5 @@ jobs:
       - uses: ncipollo/release-action@v1
         with:
           artifacts: "app.zip"
-          tag: v3.0
+          tag: ${{ steps.bump.outputs.version }}
           bodyFile: "README.md"
