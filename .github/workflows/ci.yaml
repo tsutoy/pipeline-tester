@@ -43,13 +43,12 @@ jobs:
     secrets: inherit
 
   backend-ci:
-    needs: [check-changes, frontend-ci]
+    needs: [check-changes]
     uses: ./.github/workflows/backend.ci.yaml
     secrets: inherit
   
 
   bump-repo:
-    needs: [frontend-ci, backend-ci]
     uses: ./.github/workflows/bump-version.yaml
     with:
       context_name: repo
