@@ -54,7 +54,7 @@ jobs:
       - name: Run auto-commit
         uses: stefanzweifel/git-auto-commit-action@v4.16.0
         with:
-          commit_message: 'action: bump frontend version to ${{ steps.bump.outputs.frontend_version }}'
+          commit_message: 'action: bump frontend version to ${{ steps.bump.outputs.version }}'
 
       - name: Save Auto Commit
         id: auto-commit
@@ -63,7 +63,7 @@ jobs:
       - name: Bump manifest version
         working-directory: ${{ env.WORKING_DIRECTORY }}
         run: |
-          sed -i s/{{version}}/${{ steps.bump.outputs.frontend_version }}/g ./manifest.json
+          sed -i s/{{version}}/${{ steps.bump.outputs.version }}/g ./manifest.json
 
       - name: Package app
         run: zip -r app.zip manifest.json
