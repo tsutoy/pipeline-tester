@@ -55,7 +55,7 @@ jobs:
       context_name: repo
 
   release:
-    needs: [bump-repo]
+    needs: [frontend-ci, bump-repo]
     runs-on: ubuntu-latest
 
     permissions:
