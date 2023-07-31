@@ -55,9 +55,9 @@ jobs:
         run: yarn build
     
     outputs:
-      version: ${{ steps.bump.outputs.version }}
+      version: ${{ needs.check-next-bump-version.outputs.version }}
       bump_commit_id: ${{ steps.auto-commit.outputs.commit_id }}
-      artifact_name: 'app_${{ steps.bump.outputs.version }}'
+      artifact_name: 'app_${{ needs.check-next-bump-version.outputs.version }}'
 
   bump-version:
     uses: ./.github/workflows/bump-version.yaml

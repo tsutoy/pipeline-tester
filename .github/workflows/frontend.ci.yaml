@@ -57,22 +57,22 @@ jobs:
       - name: Bump manifest version
         working-directory: ${{ env.WORKING_DIRECTORY }}
         run: |
-          sed -i s/{{version}}/${{ steps.bump.outputs.version }}/g ./manifest.json
+          sed -i s/{{version}}/${{ needs.check-next-bump-version.outputs.version }}/g ./manifest.json
 
       - name: Package app
-        run: zip -r "app_${{ steps.bump.outputs.version }}.zip" manifest.json
+        run: zip -r "app_${{ needs.check-next-bump-version.outputs.version }}.zip" manifest.json
         working-directory: ${{ env.WORKING_DIRECTORY }}
 
       - name: Upload package as artifact
         uses: actions/upload-artifact@v3
         with:
-          name: 'app_${{ steps.bump.outputs.version }}'
-          path: '${{ env.WORKING_DIRECTORY }}/app_${{ steps.bump.outputs.version }}.zip'
+          name: 'app_${{ needs.check-next-bump-version.outputs.version }}'
+          path: '${{ env.WORKING_DIRECTORY }}/app_${{ needs.check-next-bump-version.outputs.version }}.zip'
     
     outputs:
-      version: ${{ steps.bump.outputs.version }}
+      version: ${{ needs.check-next-bump-version.outputs.version }}
       bump_commit_id: ${{ steps.auto-commit.outputs.commit_id }}
-      artifact_name: 'app_${{ steps.bump.outputs.version }}'
+      artifact_name: 'app_${{ needs.check-next-bump-version.outputs.version }}'
 
   bump-version:
     uses: ./.github/workflows/bump-version.yaml
