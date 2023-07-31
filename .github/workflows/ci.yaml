@@ -82,13 +82,13 @@ jobs:
         env:
           old_version: ${{ needs.bump-repo.outputs.old_version }}
           new_version: ${{ needs.bump-repo.outputs.new_version }}
-          frontend_output: ${{ needs.frontend-ci.outputs.new_version || 'Nothing changes' }}
-          backend_output: ${{ needs.backend-ci.outputs.new_version || 'Nothing changes' }}
+          frontend_output: Upgrade version from ${{ needs.frontend-ci.outputs.old_version }} to ${{ needs.frontend-ci.outputs.new_version }}
+          frontend_output: Upgrade version from ${{ needs.backend-ci.outputs.old_version }} to ${{ needs.backend-ci.outputs.new_version }}
         run: |
           sed -i "s/{{last_tag}}/${{ env.old_version }}/g" templates/release.md
           sed -i "s/{{current_tag}}/${{ env.new_version }}/g" templates/release.md
-          sed -i "s/{{frontend_output}}/${{ env.frontend_output }}/g" templates/release.md
-          sed -i "s/{{backend_output}}/${{ env.backend_output }}/g" templates/release.md
+          sed -i "s/{{frontend_output}}/${{ needs.frontend-ci.outputs.new_version && env.frontend_output | 'Nothing Changes' }}/g" templates/release.md
+          sed -i "s/{{backend_output}}/${{ needs.backend-ci.outputs.new_version && env.backend_output | 'Nothing Changes' }}/g" templates/release.md
 
       - uses: ncipollo/release-action@v1
         with:
