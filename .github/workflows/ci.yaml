@@ -38,23 +38,29 @@ jobs:
       frontend_changed: ${{ steps.filter.outputs.frontend }}
     
   frontend-ci:
+    if: steps.filter.outputs.frontend == 'true'
     needs: [check-changes]
     uses: ./.github/workflows/frontend.ci.yaml
     secrets: inherit
 
   backend-ci:
+    if: steps.filter.outputs.backend == 'true'
     needs: [check-changes]
     uses: ./.github/workflows/backend.ci.yaml
     secrets: inherit
   
 
   bump-repo:
+    if: |
+      always() && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled')
     needs: [frontend-ci, backend-ci]
     uses: ./.github/workflows/bump-version.yaml
     with:
       context_name: repo
 
   release:
+    if: |
+      always() && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled')
     needs: [frontend-ci, bump-repo]
     runs-on: ubuntu-latest
 
