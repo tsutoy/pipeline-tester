@@ -43,7 +43,7 @@ jobs:
     secrets: inherit
 
   backend-ci:
-    needs: [frontend-ci]
+    needs: [check-changes, frontend-ci]
     uses: ./.github/workflows/backend.ci.yaml
     secrets: inherit
   

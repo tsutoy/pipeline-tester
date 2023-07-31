@@ -60,6 +60,7 @@ jobs:
       artifact_name: 'app_${{ needs.check-next-bump-version.outputs.version }}'
 
   bump-version:
+    needs: [build]
     uses: ./.github/workflows/bump-version.yaml
     with:
       context_name: frontend

@@ -13,7 +13,6 @@ on:
         description: "App package artifact name"
         value: ${{ jobs.bump-and-package.outputs.artifact_name }}
 
-
 env:
   WORKING_DIRECTORY: apps/sidebar
 
@@ -75,6 +74,7 @@ jobs:
       artifact_name: 'app_${{ needs.check-next-bump-version.outputs.version }}'
 
   bump-version:
+    needs: [package]
     uses: ./.github/workflows/bump-version.yaml
     with:
       context_name: frontend
