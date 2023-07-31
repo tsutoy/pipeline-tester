@@ -74,6 +74,7 @@ jobs:
 
       - uses: ncipollo/release-action@v1
         with:
+          artifactErrorsFailBuild: true
           artifacts: "${{ needs.frontend-ci.outputs.artifact_name }}.zip"
           tag: ${{ needs.bump-repo.outputs.version }}
           bodyFile: "README.md"
