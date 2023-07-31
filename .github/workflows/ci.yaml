@@ -60,12 +60,12 @@ jobs:
       frontend_changed: ${{ steps.filter.outputs.frontend }}
     
   frontend-ci:
-    needs: [check-changes]
+    needs: [setup-and-check-changes]
     uses: ./.github/workflows/frontend.ci.yaml
     secrets: inherit
 
   backend-ci:
-    needs: [check-changes, frontend-ci]
+    needs: [setup-and-check-changes, frontend-ci]
     uses: ./.github/workflows/backend.ci.yaml
     secrets: inherit
   
