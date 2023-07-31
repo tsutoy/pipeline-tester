@@ -19,7 +19,6 @@ jobs:
     with:
       context_name: backend
       working_directory: apps/backend
-      auto_commit: false
 
   build:
     needs: [bump-version]
