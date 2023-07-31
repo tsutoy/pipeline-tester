@@ -78,4 +78,4 @@ jobs:
     uses: ./.github/workflows/bump-version.yaml
     with:
       context_name: frontend
-      working_directory: ${{ env.WORKING_DIRECTORY }}
+      working_directory: apps/sidebar
