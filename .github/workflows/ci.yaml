@@ -5,9 +5,6 @@ on:
     branches: 
       - main
 
-
-permissions: write-all
-
 env:
   FRONTEND_DIRECTORY: apps/sidebar
   BACKEND_DIRECTORY: apps/backend
@@ -63,9 +60,6 @@ jobs:
       always() && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled')
     needs: [frontend-ci, backend-ci, bump-repo]
     runs-on: ubuntu-latest
-
-    permissions:
-      contents: write
 
     timeout-minutes: 15
 
