@@ -18,7 +18,7 @@ jobs:
     uses: ./.github/workflows/bump-version.yaml
     with:
       context_name: backend
-      working_directory: ${{ env.WORKING_DIRECTORY }}
+      working_directory: apps/backend
       auto_commit: false
 
   build:
@@ -51,7 +51,7 @@ jobs:
         run: yarn install
 
       - name: Build app
-        working-directory: ${{ env.WORKING_DIRECTORY }}
+        working-directory: apps/backend
         run: yarn build
     
     outputs:
@@ -64,4 +64,4 @@ jobs:
     uses: ./.github/workflows/bump-version.yaml
     with:
       context_name: frontend
-      working_directory: ${{ env.WORKING_DIRECTORY }}
+      working_directory: apps/backend

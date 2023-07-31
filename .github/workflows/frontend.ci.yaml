@@ -21,7 +21,7 @@ jobs:
     uses: ./.github/workflows/bump-version.yaml
     with:
       context_name: frontend
-      working_directory: ${{ env.WORKING_DIRECTORY }}
+      working_directory: apps/sidebar
       auto_commit: false
 
   package:
@@ -54,19 +54,19 @@ jobs:
         run: yarn install
 
       - name: Bump manifest version
-        working-directory: ${{ env.WORKING_DIRECTORY }}
+        working-directory: apps/sidebar
         run: |
           sed -i s/{{version}}/${{ needs.check-next-bump-version.outputs.version }}/g ./manifest.json
 
       - name: Package app
         run: zip -r "app_${{ needs.check-next-bump-version.outputs.version }}.zip" manifest.json
-        working-directory: ${{ env.WORKING_DIRECTORY }}
+        working-directory: apps/sidebar
 
       - name: Upload package as artifact
         uses: actions/upload-artifact@v3
         with:
           name: 'app_${{ needs.check-next-bump-version.outputs.version }}'
-          path: '${{ env.WORKING_DIRECTORY }}/app_${{ needs.check-next-bump-version.outputs.version }}.zip'
+          path: 'apps/sidebar/app_${{ needs.check-next-bump-version.outputs.version }}.zip'
     
     outputs:
       version: ${{ needs.check-next-bump-version.outputs.version }}
