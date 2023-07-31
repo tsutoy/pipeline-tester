@@ -49,12 +49,13 @@ jobs:
   
 
   bump-repo:
+     needs: [frontend-ci, backend-ci]
     uses: ./.github/workflows/bump-version.yaml
     with:
       context_name: repo
 
   release:
-    needs: [frontend-ci, backend-ci, bump-repo]
+    needs: [bump-repo]
     runs-on: ubuntu-latest
 
     permissions:
