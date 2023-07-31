@@ -49,7 +49,7 @@ jobs:
   
 
   bump-repo:
-     needs: [frontend-ci, backend-ci]
+    needs: [frontend-ci, backend-ci]
     uses: ./.github/workflows/bump-version.yaml
     with:
       context_name: repo
