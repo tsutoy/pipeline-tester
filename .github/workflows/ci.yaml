@@ -85,10 +85,10 @@ jobs:
           frontend_output: ${{ needs.frontend-ci.outputs.new_version || 'Nothing changes' }}
           backend_output: ${{ needs.backend-ci.outputs.new_version || 'Nothing changes' }}
         run: |
-          sed -i s/{{last_tag}}/${{ env.old_version }}/g templates/release.md
-          sed -i s/{{current_tag}}/${{ env.new_version }}/g templates/release.md
-          sed -i s/{{frontend_output}}/${{ env.frontend_output }}/g templates/release.md
-          sed -i s/{{backend_output}}/${{ env.backend_output }}/g templates/release.md
+          sed -i "s/{{last_tag}}/${{ env.old_version }}/g" templates/release.md
+          sed -i "s/{{current_tag}}/${{ env.new_version }}/g" templates/release.md
+          sed -i "s/{{frontend_output}}/${{ env.frontend_output }}/g" templates/release.md
+          sed -i "s/{{backend_output}}/${{ env.backend_output }}/g" templates/release.md
 
       - uses: ncipollo/release-action@v1
         with:
