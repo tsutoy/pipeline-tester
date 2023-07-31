@@ -83,6 +83,13 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v3
 
+      - name: Setup Cache Node_Modules
+        id: cache-node-modules
+        uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-${{ steps.setup-node.outputs['node-version'] }}-node_modules-${{ hashFiles('**/yarn.lock') }}
+
       - name: Setup Cache Scripts
         id: cache-scripts
         uses: actions/cache@v3
