@@ -1,6 +1,6 @@
 {
   "name": "test",
-  "version": "1.0.44",
+  "version": "1.0.45",
   "scripts": {
     "build": "tsc -p ./tsconfig.build.scripts.json",
     "bump": "node scripts/bumpVersion.js"
