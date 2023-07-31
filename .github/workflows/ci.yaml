@@ -82,8 +82,8 @@ jobs:
         run: |
           sed -i s/{{last_tag}}/${{ needs.bump-repo.outputs.old_version }}/g templates/release.md
           sed -i s/{{current_tag}}/${{ needs.bump-repo.outputs.new_version }}/g templates/release.md
-          sed -i s/{{frontend_output}}/${{ needs.frontend-ci.outputs.new_version }}/g templates/release.md
-          sed -i s/{{backend_output}}/${{ needs.backend-ci.outputs.new_version }}/g templates/release.md
+          sed -i s/{{frontend_output}}/${{ needs.frontend-ci.outputs.new_version || 'Nothing changes' }}/g templates/release.md
+          sed -i s/{{backend_output}}/${{ needs.backend-ci.outputs.new_version || 'Nothing changes' }}/g templates/release.md
 
       - uses: ncipollo/release-action@v1
         with:
