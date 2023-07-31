@@ -72,11 +72,11 @@ jobs:
       - name: Upload package as artifact
         uses: actions/upload-artifact@v3
         with:
-          name: app
+          name: 'app_${{ steps.bump.outputs.version }}'
           path: '${{ env.WORKING_DIRECTORY }}/app_${{ steps.bump.outputs.version }}.zip'
     
     outputs:
       version: ${{ steps.bump.outputs.version }}
       bump_commit_id: ${{ steps.auto-commit.outputs.commit_id }}
-      artifact_name: app
+      artifact_name: 'app_${{ steps.bump.outputs.version }}'
 

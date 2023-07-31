@@ -116,10 +116,10 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@v3
         with:
-          name: app
+          name: ${{ needs.frontend-ci.outputs.artifact_name }}
 
       - uses: ncipollo/release-action@v1
         with:
-          artifacts: "app_${{ needs.frontend-ci.outputs.version }}.zip"
+          artifacts: "${{ needs.frontend-ci.outputs.artifact_name }}.zip"
           tag: ${{ steps.bump.outputs.version }}
           bodyFile: "README.md"
