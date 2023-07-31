@@ -57,7 +57,7 @@ jobs:
 
   release:
     permissions:
-      content: write
+      contents: write
 
     if: |
       always() && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled')
