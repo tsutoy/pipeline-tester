@@ -13,7 +13,6 @@ on:
         description: "App package artifact name"
         value: ${{ jobs.bump-and-package.artifact_name }}
 
-concurrency: ${{ github.ref_name }}
 
 env:
   WORKING_DIRECTORY: ./apps/sidebar

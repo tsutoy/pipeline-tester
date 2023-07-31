@@ -10,7 +10,6 @@ on:
         description: "Auto commit if of bump version"
         value: ${{ jobs.bump-and-package.bump_commit_id }}
 
-concurrency: ${{ github.ref_name }}
 
 env:
   WORKING_DIRECTORY: ./apps/backend
