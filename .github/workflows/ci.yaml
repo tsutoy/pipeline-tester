@@ -38,14 +38,14 @@ jobs:
       frontend_changed: ${{ steps.filter.outputs.frontend }}
     
   frontend-ci:
-    if: steps.filter.outputs.frontend == 'true'
     needs: [check-changes]
+    if: needs.check-changes.outputs.frontend_changed == 'true'
     uses: ./.github/workflows/frontend.ci.yaml
     secrets: inherit
 
   backend-ci:
-    if: steps.filter.outputs.backend == 'true'
     needs: [check-changes]
+    if: needs.check-changes.outputs.backend_changed == 'true'
     uses: ./.github/workflows/backend.ci.yaml
     secrets: inherit
   
