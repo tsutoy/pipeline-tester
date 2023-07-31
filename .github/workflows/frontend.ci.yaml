@@ -5,13 +5,13 @@ on:
     outputs:
       version:
         description: "New frontend version"
-        value: ${{ jobs.bump-and-package.outputs.version }}
+        value: ${{ jobs.package.outputs.version }}
       bump_commit_id:
         description: "Auto commit if of bump version"
-        value: ${{ jobs.bump-and-package.outputs.bump_commit_id }}
+        value: ${{ jobs.package.outputs.bump_commit_id }}
       artifact_name:
         description: "App package artifact name"
-        value: ${{ jobs.bump-and-package.outputs.artifact_name }}
+        value: ${{ jobs.package.outputs.artifact_name }}
 
 env:
   WORKING_DIRECTORY: apps/sidebar
