@@ -39,12 +39,12 @@ jobs:
           path: '**/node_modules'
           key: ${{ runner.os }}-${{ steps.setup-node.outputs['node-version'] }}-node_modules-${{ hashFiles('**/yarn.lock') }}
 
-      - name: Setup Dependencies
-        if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: yarn install
-
-      - name: Build scripts
-        run: yarn build
+      - name: Setup Cache Scripts
+        id: cache-scripts
+        uses: actions/cache@v3
+        with:
+          path: 'scripts'
+          key: ${{ runner.os }}-${{ steps.setup-node.outputs['node-version'] }}-node_modules-${{ hashFiles('scripts/**.ts') }}
 
       - name: Bump version
         id: bump
