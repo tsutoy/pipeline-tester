@@ -1,5 +1,5 @@
 {
-  "name": "test",
+  "name": "test2",
   "version": "1.0.33",
   "scripts": {
     "bump": "node ../../scripts/bumpVersion.js"
