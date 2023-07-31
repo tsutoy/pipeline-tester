@@ -1,4 +1,4 @@
-name: Navbar CI/CD
+name: CI
 
 on:
   push:
@@ -13,7 +13,7 @@ env:
   BACKEND_DIRECTORY: apps/backend
 
 jobs:
-  setup-and-check-changes:
+  check-changes:
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -23,28 +23,6 @@ jobs:
 
       - name: Update repository
         run: git pull
-
-      - name: Setup Cache Node_Modules
-        id: cache-node-modules
-        uses: actions/cache@v3
-        with:
-          path: '**/node_modules'
-          key: ${{ runner.os }}-${{ steps.setup-node.outputs['node-version'] }}-node_modules-${{ hashFiles('**/yarn.lock') }}
-
-      - name: Setup Dependencies
-        if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: yarn install
-
-      - name: Setup Cache Scripts
-        id: cache-scripts
-        uses: actions/cache@v3
-        with:
-          path: 'scripts'
-          key: ${{ runner.os }}-${{ steps.setup-node.outputs['node-version'] }}-node_modules-${{ hashFiles('scripts/**.ts') }}
-
-      - name: Setup Scripts
-        if: steps.cache-scripts.outputs.cache-hit != 'true'
-        run: yarn build
 
       - uses: dorny/paths-filter@v2
         id: filter
@@ -60,12 +38,12 @@ jobs:
       frontend_changed: ${{ steps.filter.outputs.frontend }}
     
   frontend-ci:
-    needs: [setup-and-check-changes]
+    needs: [check-changes]
     uses: ./.github/workflows/frontend.ci.yaml
     secrets: inherit
 
   backend-ci:
-    needs: [setup-and-check-changes, frontend-ci]
+    needs: [frontend-ci]
     uses: ./.github/workflows/backend.ci.yaml
     secrets: inherit
   
