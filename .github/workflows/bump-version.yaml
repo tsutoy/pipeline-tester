@@ -75,7 +75,7 @@ jobs:
       - name: Bump version
         id: bump
         run: yarn bump
-        working-directory: ${{ env.WORKING_DIRECTORY }}
+        working-directory: ${{ inputs.working_directory }}
 
       - name: Run auto-commit
         uses: stefanzweifel/git-auto-commit-action@v4.16.0
