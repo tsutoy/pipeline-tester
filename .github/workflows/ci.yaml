@@ -1,0 +1,72 @@
+name: Navbar CI/CD
+
+on:
+  push:
+    branches: 
+      - main
+
+concurrency: ${{ github.ref_name }}
+
+env:
+  FRONTEND_DIRECTORY: apps/sidebar
+  BACKEND_DIRECTORY: apps/backend
+
+jobs:
+  check-changes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+
+      - name: Update repository
+        run: git pull
+
+      - uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            backend:
+              - '${{ env.BACKEND_DIRECTORY }}/**'
+            frontend:
+              - '${{ env.FRONTEND_DIRECTORY }}/**'
+    
+    outputs:
+      backend_changed: ${{ steps.filter.outputs.backend }}
+      frontend_changed: ${{ steps.filter.outputs.frontend }}
+    
+  frontend-ci:
+    needs: [check-changes]
+    uses: ./.github/workflows/frontend.ci.yaml
+    secrets: inherit
+
+  backend-ci:
+    needs: [check-changes]
+    uses: ./.github/workflows/backend.ci.yaml
+    secrets: inherit
+  
+
+  release:
+    needs: [frontend-ci, backend-ci]
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: app
+
+      - uses: ncipollo/release-action@v1
+        with:
+          artifacts: "app.zip"
+          tag: v3.0
+          bodyFile: "README.md"

@@ -1,0 +1,83 @@
+name: Frontend CI
+
+on:
+  workflow_call:
+    outputs:
+      version:
+        description: "New frontend version"
+        value: ${{ jobs.bump-and-package.version }}
+      bump_commit_id:
+        description: "Auto commit if of bump version"
+        value: ${{ jobs.bump-and-package.bump_commit_id }}
+      artifact_name:
+        description: "App package artifact name"
+        value: ${{ jobs.bump-and-package.artifact_name }}
+
+concurrency: ${{ github.ref_name }}
+
+env:
+  WORKING_DIRECTORY: ./apps/sidebar
+
+jobs:
+  bump-and-package:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+
+      - name: Update repository
+        run: git pull
+
+      - name: Setup Cache Node_Modules
+        id: cache-node-modules
+        uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-${{ steps.setup-node.outputs['node-version'] }}-node_modules-${{ hashFiles('**/yarn.lock') }}
+
+      - name: Setup Dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: yarn install
+
+      - name: Build scripts
+        run: yarn build
+
+      - name: Bump version
+        id: bump
+        run: yarn bump
+        working-directory: ${{ env.WORKING_DIRECTORY }}
+
+      - name: Run auto-commit
+        uses: stefanzweifel/git-auto-commit-action@v4.16.0
+        with:
+          commit_message: 'action: bump frontend version to ${{ steps.bump.outputs.frontend_version }}'
+
+      - name: Save Auto Commit
+        id: auto-commit
+        run: echo "commit_id=$(git log --format="%H" -n 1)" >> $GITHUB_OUTPUT
+
+      - name: Bump manifest version
+        working-directory: ${{ env.WORKING_DIRECTORY }}
+        run: |
+          sed -i s/{{version}}/${{ steps.bump.outputs.frontend_version }}/g ./manifest.json
+
+      - name: Package app
+        run: zip -r app.zip manifest.json
+        working-directory: ${{ env.WORKING_DIRECTORY }}
+
+      - name: Upload package as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: app
+          path: '${{ env.WORKING_DIRECTORY }}/app.zip'
+    
+    outputs:
+      version: ${{ steps.bump.outputs.version }}
+      bump_commit_id: ${{ steps.auto-commit.outputs.commit_id }}
+      artifact_name: app
+
