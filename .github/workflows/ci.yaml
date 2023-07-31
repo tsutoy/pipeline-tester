@@ -83,7 +83,7 @@ jobs:
           old_version: ${{ needs.bump-repo.outputs.old_version }}
           new_version: ${{ needs.bump-repo.outputs.new_version }}
           frontend_output: Upgrade version from ${{ needs.frontend-ci.outputs.old_version }} to ${{ needs.frontend-ci.outputs.new_version }}
-          frontend_output: Upgrade version from ${{ needs.backend-ci.outputs.old_version }} to ${{ needs.backend-ci.outputs.new_version }}
+          backend_output: Upgrade version from ${{ needs.backend-ci.outputs.old_version }} to ${{ needs.backend-ci.outputs.new_version }}
         run: |
           sed -i "s/{{last_tag}}/${{ env.old_version }}/g" templates/release.md
           sed -i "s/{{current_tag}}/${{ env.new_version }}/g" templates/release.md
