@@ -48,6 +48,9 @@ jobs:
   
 
   bump-repo:
+    permissions:
+      contents: write
+
     if: |
       always() && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled')
     needs: [frontend-ci, backend-ci]
@@ -56,9 +59,6 @@ jobs:
       context_name: repo
 
   release:
-    permissions:
-      contents: write
-
     if: |
       always() && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled')
     needs: [frontend-ci, backend-ci, bump-repo]
