@@ -17,15 +17,14 @@ env:
   WORKING_DIRECTORY: apps/sidebar
 
 jobs:
-  check-next-bump-version:
+  bump-version:
     uses: ./.github/workflows/bump-version.yaml
     with:
       context_name: frontend
       working_directory: apps/sidebar
-      auto_commit: false
 
   package:
-    needs: [check-next-bump-version]
+    needs: [bump-version]
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -56,26 +55,19 @@ jobs:
       - name: Bump manifest version
         working-directory: apps/sidebar
         run: |
-          sed -i s/{{version}}/${{ needs.check-next-bump-version.outputs.version }}/g ./manifest.json
+          sed -i s/{{version}}/${{ needs.bump-version.outputs.version }}/g ./manifest.json
 
       - name: Package app
-        run: zip -r "app_${{ needs.check-next-bump-version.outputs.version }}.zip" manifest.json
+        run: zip -r "app_${{ needs.bump-version.outputs.version }}.zip" manifest.json
         working-directory: apps/sidebar
 
       - name: Upload package as artifact
         uses: actions/upload-artifact@v3
         with:
-          name: 'app_${{ needs.check-next-bump-version.outputs.version }}'
-          path: 'apps/sidebar/app_${{ needs.check-next-bump-version.outputs.version }}.zip'
+          name: 'app_${{ needs.bump-version.outputs.version }}'
+          path: 'apps/sidebar/app_${{ needs.bump-version.outputs.version }}.zip'
     
     outputs:
-      version: ${{ needs.check-next-bump-version.outputs.version }}
+      version: ${{ needs.bump-version.outputs.version }}
       bump_commit_id: ${{ steps.auto-commit.outputs.commit_id }}
-      artifact_name: 'app_${{ needs.check-next-bump-version.outputs.version }}'
-
-  bump-version:
-    needs: [package]
-    uses: ./.github/workflows/bump-version.yaml
-    with:
-      context_name: frontend
-      working_directory: apps/sidebar
+      artifact_name: 'app_${{ needs.bump-version.outputs.version }}'

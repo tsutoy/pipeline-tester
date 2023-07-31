@@ -14,7 +14,7 @@ env:
   WORKING_DIRECTORY: apps/backend
 
 jobs:
-  check-next-bump-version:
+  bump-version:
     uses: ./.github/workflows/bump-version.yaml
     with:
       context_name: backend
@@ -22,7 +22,7 @@ jobs:
       auto_commit: false
 
   build:
-    needs: [check-next-bump-version]
+    needs: [bump-version]
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -49,19 +49,8 @@ jobs:
       - name: Setup Dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: yarn install
-
-      - name: Build app
-        working-directory: apps/backend
-        run: yarn build
     
     outputs:
-      version: ${{ needs.check-next-bump-version.outputs.version }}
+      version: ${{ needs.bump-version.outputs.version }}
       bump_commit_id: ${{ steps.auto-commit.outputs.commit_id }}
-      artifact_name: 'app_${{ needs.check-next-bump-version.outputs.version }}'
-
-  bump-version:
-    needs: [build]
-    uses: ./.github/workflows/bump-version.yaml
-    with:
-      context_name: frontend
-      working_directory: apps/backend
+      artifact_name: 'app_${{ needs.bump-version.outputs.version }}'

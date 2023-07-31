@@ -8,12 +8,6 @@ on:
         required: true
         type: string
 
-      auto_commit:
-        description: 'Auto commit bump'
-        default: true
-        required: false
-        type: boolean
-
       working_directory:
         description: 'Working directory to execute bump'
         default: ''
@@ -78,13 +72,11 @@ jobs:
         working-directory: ${{ env.WORKING_DIRECTORY }}
 
       - name: Run auto-commit
-        if: ${{ inputs.auto_commit }}
         uses: stefanzweifel/git-auto-commit-action@v4.16.0
         with:
           commit_message: 'action: bump ${{ inputs.context_name }} version to ${{ steps.bump.outputs.version }}'
 
       - name: Save Auto Commit
-        if: ${{ inputs.auto_commit }}
         id: auto-commit
         run: echo "commit_id=$(git log --format="%H" -n 1)" >> $GITHUB_OUTPUT
     
