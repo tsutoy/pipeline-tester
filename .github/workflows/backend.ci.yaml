@@ -3,9 +3,12 @@ name: Backend CI
 on:
   workflow_call:
     outputs:
-      version:
+      new_version:
         description: "New backend version"
-        value: ${{ jobs.build.outputs.version }}
+        value: ${{ jobs.build.outputs.new_version }}
+      old_version:
+        description: "Old backend version"
+        value: ${{ jobs.build.outputs.old_version }}
       bump_commit_id:
         description: "Auto commit if of bump version"
         value: ${{ jobs.build.outputs.bump_commit_id }}
@@ -50,6 +53,7 @@ jobs:
         run: yarn install
     
     outputs:
-      version: ${{ needs.bump-version.outputs.version }}
+      new_version: ${{ needs.bump-version.outputs.new_version }}
+      old_version: ${{ needs.bump-version.outputs.old_version }}
       bump_commit_id: ${{ steps.auto-commit.outputs.commit_id }}
       artifact_name: 'app_${{ needs.bump-version.outputs.version }}'

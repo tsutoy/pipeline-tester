@@ -61,7 +61,7 @@ jobs:
   release:
     if: |
       always() && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled')
-    needs: [frontend-ci, bump-repo]
+    needs: [frontend-ci, backend-ci, bump-repo]
     runs-on: ubuntu-latest
 
     permissions:
@@ -78,8 +78,15 @@ jobs:
         with:
           name: ${{ needs.frontend-ci.outputs.artifact_name }}
 
+      - name: Update release template
+        run: |
+          sed -i s/{{last_tag}}/${{ needs.bump-repo.outputs.old_version }}/g templates/release.md
+          sed -i s/{{current_tag}}/${{ needs.bump-repo.outputs.new_version }}/g templates/release.md
+          sed -i s/{{frontend_output}}/${{ needs.frontend-ci.outputs.new_version }}/g templates/release.md
+          sed -i s/{{backend_output}}/${{ needs.backend-ci.outputs.new_version }}/g templates/release.md
+
       - uses: ncipollo/release-action@v1
         with:
           artifacts: "${{ needs.frontend-ci.outputs.artifact_name }}.zip"
-          tag: ${{ needs.bump-repo.outputs.version }}
-          bodyFile: "README.md"
+          tag: ${{ needs.bump-repo.outputs.new_version }}
+          bodyFile: templates/release.md

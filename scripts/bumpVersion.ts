@@ -1,5 +1,6 @@
 import * as core from '@actions/core';
 import { shell } from './utils/shell';
+import {version} from './package.json';
 
 type BranchTypes = 'major' | 'minor' | 'patch';
 
@@ -18,11 +19,15 @@ async function main() {
   const bumpType = 'patch';
   core.info(`Version bump type: ${bumpType}`);
 
-  const version = bumpVersion(bumpType);
+  const newVersion = bumpVersion(bumpType);
 
-  core.info(`Bump to version: ${version}`);
+  core.info(`Bump to version: ${newVersion}`);
 
-  shell.exec(`echo "version=${version}" >> $GITHUB_OUTPUT`, {
+  shell.exec(`echo "new_version=${newVersion}" >> $GITHUB_OUTPUT`, {
+    onErrorMessage: 'failed to output version.',
+  });
+
+  shell.exec(`echo "old_version=${version}" >> $GITHUB_OUTPUT`, {
     onErrorMessage: 'failed to output version.',
   });
 }

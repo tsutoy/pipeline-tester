@@ -3,9 +3,12 @@ name: Frontend CI
 on:
   workflow_call:
     outputs:
-      version:
+      new_version:
         description: "New frontend version"
-        value: ${{ jobs.package.outputs.version }}
+        value: ${{ jobs.package.outputs.new_version }}
+      old_version:
+        description: "Old frontend version"
+        value: ${{ jobs.package.outputs.old_version }}
       bump_commit_id:
         description: "Auto commit if of bump version"
         value: ${{ jobs.package.outputs.bump_commit_id }}
@@ -55,19 +58,20 @@ jobs:
       - name: Bump manifest version
         working-directory: apps/sidebar
         run: |
-          sed -i s/{{version}}/${{ needs.bump-version.outputs.version }}/g ./manifest.json
+          sed -i s/{{version}}/${{ needs.bump-version.outputs.new_version }}/g ./manifest.json
 
       - name: Package app
-        run: zip -r "app_${{ needs.bump-version.outputs.version }}.zip" manifest.json
+        run: zip -r "app_${{ needs.bump-version.outputs.new_version }}.zip" manifest.json
         working-directory: apps/sidebar
 
       - name: Upload package as artifact
         uses: actions/upload-artifact@v3
         with:
-          name: 'app_${{ needs.bump-version.outputs.version }}'
-          path: 'apps/sidebar/app_${{ needs.bump-version.outputs.version }}.zip'
+          name: 'app_${{ needs.bump-version.outputs.new_version }}'
+          path: 'apps/sidebar/app_${{ needs.bump-version.outputs.new_version }}.zip'
     
     outputs:
-      version: ${{ needs.bump-version.outputs.version }}
+      new_version: ${{ needs.bump-version.outputs.new_version }}
+      old_version: ${{ needs.bump-version.outputs.old_version }}
       bump_commit_id: ${{ steps.auto-commit.outputs.commit_id }}
-      artifact_name: 'app_${{ needs.bump-version.outputs.version }}'
+      artifact_name: 'app_${{ needs.bump-version.outputs.new_version }}'
