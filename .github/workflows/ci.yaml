@@ -111,8 +111,9 @@ jobs:
     permissions:
       contents: write
 
-    if: always()
     needs: [frontend-ci, backend-ci, bump-repo, release]
+    if: if: ${{ always() && contains(needs.*.result, 'failure') }}
+    
     uses: ./.github/workflows/rollback.yaml
     with:
       release_id: ${{ needs.release.outputs.id }}
