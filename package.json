@@ -3,7 +3,8 @@
   "version": "1.0.5",
   "scripts": {
     "build": "tsc -p ./tsconfig.build.scripts.json",
-    "bump": "node scripts/bumpVersion.js"
+    "bump": "node scripts/bumpVersion.js",
+    "rollback": "node scripts/rollback.js"
   },
   "dependencies": {
     "@actions/core": "^1.10.0",

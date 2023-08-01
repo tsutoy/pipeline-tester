@@ -39,7 +39,7 @@ jobs:
       contents: write
 
     needs: [check-changes]
-    #if: needs.check-changes.outputs.frontend_changed == 'true'
+    if: needs.check-changes.outputs.frontend_changed == 'true'
     uses: ./.github/workflows/frontend.ci.yaml
     secrets: inherit
 
@@ -48,7 +48,7 @@ jobs:
       contents: write
 
     needs: [check-changes]
-    #if: needs.check-changes.outputs.backend_changed == 'true'
+    if: needs.check-changes.outputs.backend_changed == 'true'
     uses: ./.github/workflows/backend.ci.yaml
     secrets: inherit
   
@@ -101,3 +101,11 @@ jobs:
           artifacts: "${{ needs.frontend-ci.outputs.artifact_name }}.zip"
           tag: ${{ needs.bump-repo.outputs.new_version }}
           bodyFile: templates/release.md
+
+  rollback:
+    permissions:
+      contents: write
+
+    if: failure()
+    needs: [frontend-ci, backend-ci, bump-repo, release]
+    uses: ./.github/workflows/rollback.yaml

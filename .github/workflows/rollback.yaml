@@ -1,0 +1,93 @@
+name: Rollback
+
+on:
+  workflow_call:
+    inputs:
+      release_id:
+        description: 'Working directory to execute bump'
+        default: ''
+        required: false
+        type: string
+      frontend_commit_id:
+        description: 'Working directory to execute bump'
+        default: ''
+        required: false
+        type: string
+      backend_commit_id:
+        description: 'Working directory to execute bump'
+        default: ''
+        required: false
+        type: string
+      repo_commit_id:
+        description: 'Working directory to execute bump'
+        default: ''
+        required: false
+        type: string
+      tag:
+        description: 'Working directory to execute bump'
+        default: ''
+        required: false
+        type: string
+
+
+jobs:
+  rollback:
+    permissions:
+      contents: write
+
+    if: failure()
+    runs-on: ubuntu-latest
+
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+
+      - name: Update repository
+        run: git pull
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        id: setup-node
+        with:
+          node-version-file: '.node-version'
+
+      - name: Setup Cache Node_Modules
+        id: cache-node-modules
+        uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-${{ steps.setup-node.outputs['node-version'] }}-node_modules-${{ hashFiles('**/yarn.lock') }}
+
+      - name: Setup Dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: yarn install
+
+      - name: Setup Cache Scripts
+        id: cache-scripts
+        uses: actions/cache@v3
+        with:
+          path: 'scripts'
+          key: ${{ runner.os }}-${{ steps.setup-node.outputs['node-version'] }}-node_modules-${{ hashFiles('scripts/**.ts') }}
+
+      - name: Setup Scripts
+        if: steps.cache-scripts.outputs.cache-hit != 'true'
+        run: yarn build
+
+      - name: Run rollback
+        env:
+          RELEASE_ID: ${{ inputs.release_id }}
+          FRONTEND_AUTO_COMMIT_ID: ${{ inputs.frontend_commit_id }}
+          BACKEND_AUTO_COMMIT_ID: ${{ inputs.backend_commit_id }}
+          REPO_AUTO_COMMIT_ID: ${{ inputs.repo_commit_id }}
+          TAG_ID: ${{ inputs.tag }}
+        id: rollback
+        run: yarn rollback
+
+      - name: Revert auto-commit
+        if: steps.rollback.outputs.REVERT_COMMIT == 'true'
+        uses: stefanzweifel/git-auto-commit-action@v4.16.0
+        with:
+          commit_message: 'revert: revert bumps'
+    
