@@ -72,7 +72,7 @@ jobs:
     permissions:
       contents: write
 
-    needs: [frontend-ci, backend-ci release]
+    needs: [frontend-ci, backend-ci, release]
     if: always() && contains(needs.*.result, 'failure')
     
     uses: ./.github/workflows/rollback.yaml
