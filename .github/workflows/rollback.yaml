@@ -35,7 +35,6 @@ jobs:
     permissions:
       contents: write
 
-    if: failure()
     runs-on: ubuntu-latest
 
     timeout-minutes: 15
