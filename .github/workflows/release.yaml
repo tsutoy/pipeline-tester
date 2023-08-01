@@ -28,6 +28,12 @@ on:
       id:
         description: "Release ID"
         value: ${{ jobs.release.outputs.id }}
+      tag:
+        description: "Release Tag"
+        value: ${{ jobs.bump-repo.outputs.new_version }}
+      bump_commit_id:
+        description: "Bump Commit ID"
+        value: ${{ jobs.bump-repo.outputs.bump_commit_id }}
 
 jobs:
   bump-repo:

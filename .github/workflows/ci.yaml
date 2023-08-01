@@ -59,7 +59,7 @@ jobs:
 
     if: |
       always() && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled')
-    needs: [frontend-ci, backend-ci, bump-repo]
+    needs: [frontend-ci, backend-ci]
     uses: ./.github/workflows/release.yaml
     with:
       artifact_name: ${{ needs.frontend-ci.outputs.artifact_name }}
@@ -72,7 +72,7 @@ jobs:
     permissions:
       contents: write
 
-    needs: [frontend-ci, backend-ci, bump-repo, release]
+    needs: [frontend-ci, backend-ci release]
     if: always() && contains(needs.*.result, 'failure')
     
     uses: ./.github/workflows/rollback.yaml
@@ -80,5 +80,5 @@ jobs:
       release_id: ${{ needs.release.outputs.id }}
       frontend_commit_id: ${{ needs.frontend-ci.outputs.bump_commit_id }}
       backend_commit_id: ${{ needs.backend-ci.outputs.bump_commit_id }}
-      repo_commit_id: ${{ needs.bump-repo.outputs.bump_commit_id }}
-      tag: ${{ needs.bump-repo.outputs.new_version }}
+      repo_commit_id: ${{ needs.release.outputs.bump_commit_id }}
+      tag: ${{ needs.release.outputs.tag }}
