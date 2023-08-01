@@ -53,17 +53,6 @@ jobs:
     secrets: inherit
   
 
-  bump-repo:
-    permissions:
-      contents: write
-
-    if: |
-      always() && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled')
-    needs: [frontend-ci, backend-ci]
-    uses: ./.github/workflows/bump-version.yaml
-    with:
-      context_name: repo
-
   release:
     permissions:
       contents: write
@@ -71,41 +60,13 @@ jobs:
     if: |
       always() && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled')
     needs: [frontend-ci, backend-ci, bump-repo]
-    runs-on: ubuntu-latest
-
-    timeout-minutes: 15
-
-    steps:
-      - name: Check out repository code
-        uses: actions/checkout@v3
-
-      - name: Download artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: ${{ needs.frontend-ci.outputs.artifact_name }}
-
-      - name: Update release template
-        env:
-          old_version: ${{ needs.bump-repo.outputs.old_version }}
-          new_version: ${{ needs.bump-repo.outputs.new_version }}
-          frontend_output: Upgrade version from ${{ needs.frontend-ci.outputs.old_version }} to ${{ needs.frontend-ci.outputs.new_version }}
-          backend_output: Upgrade version from ${{ needs.backend-ci.outputs.old_version }} to ${{ needs.backend-ci.outputs.new_version }}
-        run: |
-          sed -i "s/{{last_tag}}/${{ env.old_version }}/g" templates/release.md
-          sed -i "s/{{current_tag}}/${{ env.new_version }}/g" templates/release.md
-          sed -i "s/{{frontend_output}}/${{ needs.frontend-ci.outputs.new_version && env.frontend_output || 'Nothing Changes' }}/g" templates/release.md
-          sed -i "s/{{backend_output}}/${{ needs.backend-ci.outputs.new_version && env.backend_output || 'Nothing Changes' }}/g" templates/release.md
-
-      - uses: ncipollo/release-action@v1
-        id: release
-        with:
-          artifactErrorsFailBuild: true
-          artifacts: "${{ needs.frontend-ci.outputs.artifact_name }}aa.zip"
-          tag: ${{ needs.bump-repo.outputs.new_version }}
-          bodyFile: templates/release.md
-
-    outputs:
-      id: ${{ steps.release.outputs.id }}
+    uses: ./.github/workflows/release.yaml
+    with:
+      artifact_name: ${{ needs.frontend-ci.outputs.artifact_name }}
+      frontend_new_version: ${{ needs.frontend-ci.outputs.new_version }}
+      backend_new_version: ${{ needs.backend-ci.outputs.new_version }}
+      frontend_old_version: ${{ needs.frontend-ci.outputs.old_version }}
+      backend_old_version: ${{ needs.backend-ci.outputs.old_version }}
 
   rollback:
     permissions:

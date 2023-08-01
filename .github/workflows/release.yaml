@@ -1,0 +1,76 @@
+name: Frontend CI
+
+on:
+  workflow_call:
+    inputs:
+      artifact_name:
+        description: 'Application ZIP artifact name'
+        required: false
+        type: string
+      frontend_new_version:
+        description: 'Frontend new version'
+        required: false
+        type: string
+      backend_new_version:
+        description: 'Backend new version'
+        required: false
+        type: string
+      frontend_old_version:
+        description: 'Frontend old version'
+        required: false
+        type: string
+      backend_old_version:
+        description: 'Backend old version'
+        required: false
+        type: string
+
+    outputs:
+      id:
+        description: "Release ID"
+        value: ${{ jobs.release.outputs.id }}
+
+jobs:
+  bump-repo:
+    uses: ./.github/workflows/bump-version.yaml
+    with:
+      context_name: repo
+
+  release:
+    needs: [bump-repo]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+        with:
+          sparse-checkout: |
+            templates/release.md
+          sparse-checkout-cone-mode: false
+
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ inputs.artifact_name }}
+
+      - name: Update release template
+        env:
+          old_version: ${{ needs.bump-repo.outputs.old_version }}
+          new_version: ${{ needs.bump-repo.outputs.new_version }}
+          frontend_output: Upgrade version from ${{ inputs.frontend_old_version }} to ${{ inputs.frontend_new_version }}
+          backend_output: Upgrade version from ${{ inputs.backend_old_version }} to ${{ inputs.backend_new_version }}
+        run: |
+          sed -i "s/{{last_tag}}/${{ env.old_version }}/g" templates/release.md
+          sed -i "s/{{current_tag}}/${{ env.new_version }}/g" templates/release.md
+          sed -i "s/{{frontend_output}}/${{ inputs.frontend_new_version && env.frontend_output || 'Nothing Changes' }}/g" templates/release.md
+          sed -i "s/{{backend_output}}/${{ inputs.backend_new_version && env.backend_output || 'Nothing Changes' }}/g" templates/release.md
+
+      - uses: ncipollo/release-action@v1
+        id: release
+        with:
+          artifacts: "${{ inputs.artifact_name }}.zip"
+          tag: ${{ needs.bump-repo.outputs.new_version }}
+          bodyFile: templates/release.md
+
+    outputs:
+      id: ${{ steps.release.outputs.id }}
