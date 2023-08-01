@@ -116,7 +116,6 @@ jobs:
     
     uses: ./.github/workflows/rollback.yaml
     with:
-      token: ${{ github.token }}
       release_id: ${{ needs.release.outputs.id }}
       frontend_commit_id: ${{ needs.frontend-ci.outputs.bump_commit_id }}
       backend_commit_id: ${{ needs.backend-ci.outputs.bump_commit_id }}
