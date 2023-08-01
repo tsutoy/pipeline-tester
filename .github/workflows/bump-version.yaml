@@ -10,7 +10,7 @@ on:
 
       working_directory:
         description: 'Working directory to execute bump'
-        default: ''
+        default: 'templates'
         required: false
         type: string
 
