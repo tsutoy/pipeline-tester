@@ -1,6 +1,7 @@
 {
-  "name": "test7",
-  "version": "1.0.5",
+  "name": "test8",
+  
+  "version": "1.0.4",
   "scripts": {
     "bump": "node ../../scripts/bumpVersion.js"
   },

@@ -5,13 +5,13 @@ on:
     outputs:
       new_version:
         description: "New frontend version"
-        value: ${{ jobs.package.outputs.new_version }}
+        value: ${{ jobs.bump-version.outputs.new_version }}
       old_version:
         description: "Old frontend version"
-        value: ${{ jobs.package.outputs.old_version }}
+        value: ${{ jobs.bump-version.outputs.old_version }}
       bump_commit_id:
         description: "Auto commit if of bump version"
-        value: ${{ jobs.package.outputs.bump_commit_id }}
+        value: ${{ jobs.bump-version.outputs.bump_commit_id }}
       artifact_name:
         description: "App package artifact name"
         value: ${{ jobs.package.outputs.artifact_name }}
@@ -71,7 +71,4 @@ jobs:
           path: 'apps/sidebar/app_${{ needs.bump-version.outputs.new_version }}.zip'
     
     outputs:
-      new_version: ${{ needs.bump-version.outputs.new_version }}
-      old_version: ${{ needs.bump-version.outputs.old_version }}
-      bump_commit_id: ${{ steps.auto-commit.outputs.commit_id }}
       artifact_name: 'app_${{ needs.bump-version.outputs.new_version }}'

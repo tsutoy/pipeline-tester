@@ -5,13 +5,13 @@ on:
     outputs:
       new_version:
         description: "New backend version"
-        value: ${{ jobs.build.outputs.new_version }}
+        value: ${{ jobs.bump-version.outputs.new_version }}
       old_version:
         description: "Old backend version"
-        value: ${{ jobs.build.outputs.old_version }}
+        value: ${{ jobs.bump-version.outputs.old_version }}
       bump_commit_id:
         description: "Auto commit if of bump version"
-        value: ${{ jobs.build.outputs.bump_commit_id }}
+        value: ${{ jobs.bump-version.outputs.bump_commit_id }}
 
 env:
   WORKING_DIRECTORY: apps/backend
@@ -51,9 +51,3 @@ jobs:
       - name: Setup Dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: yarn install
-    
-    outputs:
-      new_version: ${{ needs.bump-version.outputs.new_version }}
-      old_version: ${{ needs.bump-version.outputs.old_version }}
-      bump_commit_id: ${{ steps.auto-commit.outputs.commit_id }}
-      artifact_name: 'app_${{ needs.bump-version.outputs.version }}'
