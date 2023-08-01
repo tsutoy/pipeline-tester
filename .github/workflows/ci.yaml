@@ -97,10 +97,15 @@ jobs:
           sed -i "s/{{backend_output}}/${{ needs.backend-ci.outputs.new_version && env.backend_output || 'Nothing Changes' }}/g" templates/release.md
 
       - uses: ncipollo/release-action@v1
+        id: release
         with:
-          artifacts: "${{ needs.frontend-ci.outputs.artifact_name }}.zip"
+          artifactErrorsFailBuild: true
+          artifacts: "${{ needs.frontend-ci.outputs.artifact_name }}aa.zip"
           tag: ${{ needs.bump-repo.outputs.new_version }}
           bodyFile: templates/release.md
+
+    outputs:
+      id: ${{ steps.release.outputs.id }}
 
   rollback:
     permissions:
@@ -109,3 +114,9 @@ jobs:
     if: failure()
     needs: [frontend-ci, backend-ci, bump-repo, release]
     uses: ./.github/workflows/rollback.yaml
+    with:
+      release_id: ${{ needs.release.outputs.id }}
+      frontend_commit_id: ${{ needs.frontend-ci.outputs.bump_commit_id }}
+      backend_commit_id: ${{ needs.backend-ci.outputs.bump_commit_id }}
+      repo_commit_id: ${{ needs.bump-repo.outputs.bump_commit_id }}
+      tag: ${{ needs.bump-repo.outputs.new_version }}
