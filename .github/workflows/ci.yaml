@@ -112,7 +112,7 @@ jobs:
       contents: write
 
     needs: [frontend-ci, backend-ci, bump-repo, release]
-    if: if: ${{ always() && contains(needs.*.result, 'failure') }}
+    if: ${{ always() && contains(needs.*.result, 'failure') }}
     
     uses: ./.github/workflows/rollback.yaml
     with:
