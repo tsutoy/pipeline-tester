@@ -3,6 +3,10 @@ name: Rollback
 on:
   workflow_call:
     inputs:
+      token:
+        description: 'Working directory to execute bump'
+        required: true
+        type: string
       release_id:
         description: 'Working directory to execute bump'
         default: ''
@@ -76,6 +80,7 @@ jobs:
 
       - name: Run rollback
         env:
+          GITHUB_TOKEN: ${{ inputs.token }}
           RELEASE_ID: ${{ inputs.release_id }}
           FRONTEND_AUTO_COMMIT_ID: ${{ inputs.frontend_commit_id }}
           BACKEND_AUTO_COMMIT_ID: ${{ inputs.backend_commit_id }}
