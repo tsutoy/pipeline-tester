@@ -111,7 +111,7 @@ jobs:
     permissions:
       contents: write
 
-    if: failure()
+    if: always() && contains(needs.*.result, 'failure')
     needs: [frontend-ci, backend-ci, bump-repo, release]
     uses: ./.github/workflows/rollback.yaml
     with:
